@@ -68,14 +68,13 @@ class Sandbox:
     def __init__(
         self,
         settings: Settings,
-        avatar: str,
-        level:int,
-        username:str,
-        current_exp:int,
-        max_exp:int,
-        cacheing:bool = True,
-        rank:Optional[int] = None
-
+        avatar: Optional[str] = None,
+        level: Optional[int] = None,
+        username: Optional[str] = None,
+        current_exp: Optional[int] = None,
+        max_exp: Optional[int] = None,
+        cacheing: bool = True,
+        rank: Optional[int] = None
     ):
         self.background = settings.background
         self.background_color = settings.background_color
@@ -109,11 +108,8 @@ class Sandbox:
                 data = await response.read()
                 return Image.open(BytesIO(data))
 
-    async def custom_card1(
-            self,
-            card_colour: str = "black",
-            resize: int = 100
-        )-> Union[None, bytes]:
+    async def custom_card1(self, card_colour: str = "black", 
+                           resize: int = 100) -> Union[None, bytes]:
         """
         Sandbox for first type of card and returns `bytes`
 
@@ -214,40 +210,19 @@ class Sandbox:
         return image
 
 
-    async def custom_canvas(
-            self,
-
-            has_background: bool = True,
-            background_colour: str = "black",
-
-            canvas_size: tuple = (1000, 333),
-
-            resize:int = 100,
-
-            overlay: Union[None, List] = [[(1000-50, 333-50),(25, 25), "black", 200]],
-            
-            avatar_frame: str = "curvedborder",
-            avatar_size: int = 260,
-            avatar_position: tuple = (53, 36),
-            
-            text_font: str = "levelfont.otf",
-
-            username_position: tuple = (330,130),
-            username_font_size: int = 50,
-
-            level_position: tuple = (500,40),
-            level_font_size: int = 50,
-
-            exp_position: tuple = (775,130),
-            exp_font_size: int = 50,
-            bar_exp: Union[None, int] = None,
-
-            exp_bar_width: int = 619,
-            exp_bar_height: int = 50,
-            exp_bar_background_colour: Union[str, tuple] = "white",
-            exp_bar_position:tuple = (330, 235),
-            exp_bar_curve: int = 30,
-            extra_text: Union[List, None] = None
+    async def custom_canvas(self, has_background: bool = True, background_colour: str = "black",
+                            canvas_size: tuple = (1000, 333), resize: int = 100,
+                            overlay: Union[None, List] = [[(1000-50, 333-50), (25, 25), "black", 200]],
+                            avatar_frame: str = "curvedborder", avatar_size: int = 260,
+                            avatar_position: tuple = (53, 36), text_font: str = "levelfont.otf",
+                            username_position: tuple = (330, 130), username_font_size: int = 50,
+                            level_position: tuple = (500, 40), level_font_size: int = 50,
+                            exp_position: tuple = (775, 130), exp_font_size: int = 50,
+                            bar_exp: tuple = (325, 233, 825, 265), bar_colour: str = "blue",
+                            bar_exp_width: int = 1, current_level_pos: tuple = (330, 240),
+                            current_level_font_size: int = 50, next_level_pos: tuple = (780, 240),
+                            next_level_font_size: int = 50, resize_ratio: int = 100,
+                            custom_objects: Union[None, List] = None, return_avatar: bool = False):
 
 
         )-> Union[None, bytes]:
