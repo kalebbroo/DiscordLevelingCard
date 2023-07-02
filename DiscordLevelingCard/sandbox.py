@@ -129,11 +129,14 @@ class Sandbox:
         """
         path = str(Path(__file__).parent)
 
-        if isinstance(self.avatar, str):
+        if self.avatar is None:
+            pass
+        elif isinstance(self.avatar, str):
             if self.avatar.startswith("http"):
                 self.avatar = await Sandbox._image(self.avatar)
+            self.avatar = self.avatar.resize((170,170))
         elif isinstance(self.avatar, Image.Image):
-            pass
+            self.avatar = self.avatar.resize((170,170))
         else:
             raise TypeError(f"avatar must be a url, not {type(self.avatar)}") 
 
@@ -181,6 +184,17 @@ class Sandbox:
 
         w,_ = draw.textsize(f"{current_exp}/{max_exp}", font=myFont)
         draw.text((638-w-50,(327/2)+125), f"{current_exp}/{max_exp}",font=myFont, fill=self.text_color,stroke_width=1,stroke_fill=(0, 0, 0))
+
+        if self.avatar is not None:
+            mask_im = Image.open(path + "/assets/mask_circle.jpg").convert('L').resize((170,170))
+            new = Image.new("RGB", self.avatar.size, (0, 0, 0))
+            try:
+                new.paste(self.avatar, mask=self.avatar.convert("RGBA").split()[3])
+            except Exception as e:
+                print(e)
+                new.paste(self.avatar, (0,0))
+            self.background.paste(new, (13, 65), mask_im)
+
 
         mask_im = Image.open(path + "/assets/mask_circle.jpg").convert('L').resize((170,170))
         new = Image.new("RGB", self.avatar.size, (0, 0, 0))
@@ -242,112 +256,16 @@ class Sandbox:
                         exp_bar_background_colour: str = "white",
                         exp_bar_position: tuple = (330, 235),
                         exp_bar_curve: int = 30
-                        )-> Union[None, bytes]:
+                        ) -> Union[None, bytes]:
 
-        """
-        Sandbox for third type of card which returns "BytesIO"
-
-        Parameters
-        ----------
-        has_background: :class:`bool`
-            Whether to use a background image or not. Default is True
-        
-        background_colour: :class:`str`
-            The colour of the background, only used if has_background is set to False. Default is black.
-        
-        canvas_size: :class:`tuple`
-            The size of the canvas. Default is (1000, 333)
-        
-        resize: :class:`int`
-            The percentage to resize the image to. Default is 100
-                    
-        overlay: :class:`list`
-            A list of overlays to be placed on the background. Default is [[(1000-50, 333-50),(25, 25), "black", 200]].
-
-        avatar_frame: :class:`str`
-            `circle` `square` `curvedborder` `hexagon` or path to a self created mask.
-        
-        text_font: :class:`str`
-            Default is `levelfont.otf` or path to a custom otf or ttf file type font.
-
-        avatar_size: :class:`int`
-            size of the avatar. Default is 260.
-
-        avatar_position: :class:`tuple`
-            pixel position of the avatar to be placed at. Default is (53, 36)
-
-        username_position: :class:`tuple`
-            pixel position of the username to be placed at. Default is (330,130)
-        
-        username_font_size: :class:`int`
-            font size of the username. Default is 50.
-        
-        level_position: :class:`tuple`
-            pixel position of the level to be placed at. Default is (500,40)
-        
-        level_font_size: :class:`int`
-            font size of the level. Default is 50.
-
-        exp_position: :class:`tuple`
-            pixel position of the exp to be placed at. Default is (775,130)
-        
-        exp_font_size: :class:`int`
-            font size of the exp. Default is 50.
-
-        exp_bar_width: :class:`int`
-            width of the exp bar. Default is 619.
-        
-        exp_bar_height: :class:`int`
-            height of the exp bar. Default is 50.
-        
-        exp_bar_background_colour: :class:`str`
-            colour of the exp bar. Default is white.
-        
-        exp_bar_position: :class:`tuple`
-            pixel position of the exp bar to be placed at. Default is (330, 235)
-        
-        exp_bar_curve: :class:`int`
-            curve of the exp bar. Default is 30.
-
-        extra_text: :class:`list`
-            list of tuples containing text and position of the text to be placed on the card. Default is None. eg ["string", (x-position, y-position), font-size, "colour"]
-
-        exp_bar: :class:`int`
-            The calculated exp of the user. Default is None.
-        
-
-        Attributes
-        ----------
-        - `has_background`
-        - `background_colour`
-        - `canvas_size`
-        - `resize`
-        - `overlay`
-        - `avatar_frame`
-        - `text_font`
-        - `avatar_size`
-        - `avatar_position`
-        - `username_position`
-        - `username_font_size`
-        - `level_position`
-        - `level_font_size`
-        - `exp_position`
-        - `exp_font_size`
-        - `exp_bar_width`
-        - `exp_bar_height`
-        - `exp_bar_background_colour`
-        - `exp_bar_position`
-        - `exp_bar_curve`
-        - `extra_text`
-        - `exp_bar`
-        
-        """
         path = str(Path(__file__).parent)
 
         if isinstance(self.avatar, str):
             if self.avatar.startswith("http"):
                 self.avatar = await Sandbox._image(self.avatar)
         elif isinstance(self.avatar, Image.Image):
+            pass
+        elif self.avatar is None:
             pass
         else:
             raise TypeError(f"avatar must be a url, not {type(self.avatar)}") 
@@ -356,32 +274,34 @@ class Sandbox:
             background = self.background.resize(canvas_size)
         else:
             background = Image.new("RGBA", canvas_size, ImageColor.getcolor(background_colour, "RGB"))
+
         if overlay is not None:
             for x in overlay:
                 cut = Image.new("RGBA", x[0] , ImageColor.getcolor(x[2], "RGB")+(x[3],))
                 background.paste(cut, x[1] ,cut)
 
-        avatar = self.avatar.resize((avatar_size, avatar_size))
+        if self.avatar is not None:
+            avatar = self.avatar.resize((avatar_size, avatar_size))
 
-        if avatar_frame == "square":
-            mask = Image.new("RGBA", (avatar_size, avatar_size), "white")
-        elif avatar_frame == "circle":
-            mask = Image.open(path + "/assets/mask_circle.jpg").resize((avatar_size, avatar_size))
-        elif avatar_frame == "hexagon":
-            mask = Image.open(path + "/assets/mask_hexagon.png").resize((avatar_size, avatar_size))
-        else:
+            if avatar_frame == "square":
+                mask = Image.new("RGBA", (avatar_size, avatar_size), "white")
+            elif avatar_frame == "circle":
+                mask = Image.open(path + "/assets/mask_circle.jpg").resize((avatar_size, avatar_size))
+            elif avatar_frame == "hexagon":
+                mask = Image.open(path + "/assets/mask_hexagon.png").resize((avatar_size, avatar_size))
+            else:
+                try:
+                    mask = Image.open(avatar_frame).resize((avatar_size, avatar_size))
+                except:
+                    mask = Image.open(path + "/assets/curveborder.png").resize((avatar_size, avatar_size))
+
+            new = Image.new("RGBA", avatar.size, (0, 0, 0))
             try:
-                mask = Image.open(avatar_frame).resize((avatar_size, avatar_size))
+                new.paste(avatar, mask=avatar.convert("RGBA").split()[3])
             except:
-                mask = Image.open(path + "/assets/curveborder.png").resize((avatar_size, avatar_size))
-
-        new = Image.new("RGBA", avatar.size, (0, 0, 0))
-        try:
-            new.paste(avatar, mask=avatar.convert("RGBA").split()[3])
-        except:
-            new.paste(avatar, (0,0))
-        
-        background.paste(new, avatar_position, mask.convert("L"))
+                new.paste(avatar, (0,0))
+            
+            background.paste(new, avatar_position, mask.convert("L"))
 
         if text_font == "levelfont.otf":
             fontname = path + "/assets/levelfont.otf"
@@ -393,37 +313,43 @@ class Sandbox:
 
         draw = ImageDraw.Draw(background)
 
-        if self.rank is not None:
-            combined = "LEVEL: " + self._convert_number(self.level) + "       " + "RANK: " + str(self.rank)
-        else:
-            combined = "LEVEL: " + self._convert_number(self.level)
-        draw.text(level_position, combined,font=ImageFont.truetype(fontname,level_font_size), fill=self.text_color,stroke_width=1,stroke_fill=(0, 0, 0))
+        if level_position is not None:
+            if self.rank is not None:
+                combined = "LEVEL: " + self._convert_number(self.level) + "       " + "RANK: " + str(self.rank)
+            else:
+                combined = "LEVEL: " + self._convert_number(self.level)
+            draw.text(level_position, combined,font=ImageFont.truetype(fontname,level_font_size), fill=self.text_color,stroke_width=1,stroke_fill=(0, 0, 0))
+
         draw.text(username_position, self.username,font=ImageFont.truetype(fontname,username_font_size), fill=self.text_color,stroke_width=1,stroke_fill=(0, 0, 0))
 
         if extra_text is not None and type(extra_text) == list:
             for x in extra_text:
                 draw.text(x[1], x[0],font=ImageFont.truetype(fontname,x[2]), fill=(ImageColor.getcolor(x[3], "RGBA") if type(x[3]) != tuple else extra_text),stroke_width=1,stroke_fill=(0, 0, 0))
 
-        exp = f"{self._convert_number(self.current_exp)}/{self._convert_number(self.max_exp)}"
-        draw.text(exp_position, exp,font=ImageFont.truetype(fontname,exp_font_size), fill=self.text_color,stroke_width=1,stroke_fill=(0, 0, 0))
+        if exp_position is not None:
+            exp = f"{self._convert_number(self.current_exp)}/{self._convert_number(self.max_exp)}"
+            draw.text(exp_position, exp,font=ImageFont.truetype(fontname,exp_font_size), fill=self.text_color,stroke_width=1,stroke_fill=(0, 0, 0))
 
-        if bar_exp == None:
-            bar_exp = (self.current_exp/self.max_exp)*exp_bar_width
-            exp_bar_curve_custom = exp_bar_curve
-        else:
-            bar_exp = bar_exp*exp_bar_width
 
-        if bar_exp <= 50:
-            bar_exp = 50
-            exp_bar_curve_custom = exp_bar_curve//2
+        if exp_bar_width is not None:  
+            if bar_exp is None:
+                bar_exp = (self.current_exp / self.max_exp) * exp_bar_width
+                exp_bar_curve_custom = exp_bar_curve
+            else:
+                bar_exp = bar_exp * exp_bar_width
 
-        im = Image.new("RGBA", (exp_bar_width+1, exp_bar_height+1))
-        draw = ImageDraw.Draw(im, "RGBA")
-        draw.rounded_rectangle((0, 0, exp_bar_width, exp_bar_height), exp_bar_curve, fill=(exp_bar_background_colour if type(exp_bar_background_colour) == tuple else ImageColor.getcolor(exp_bar_background_colour, "RGBA")))
-        if self.current_exp != 0:
-            draw.rounded_rectangle((0, 0, bar_exp, exp_bar_height), exp_bar_curve_custom, fill=self.bar_color)
+            if bar_exp <= 50:
+                bar_exp = 50
+                exp_bar_curve_custom = exp_bar_curve // 2
 
-        background.paste(im, exp_bar_position, im.convert("RGBA"))
+            im = Image.new("RGBA", (exp_bar_width + 1, exp_bar_height + 1))
+            draw = ImageDraw.Draw(im, "RGBA")
+            draw.rounded_rectangle((0, 0, exp_bar_width, exp_bar_height), exp_bar_curve, fill=(exp_bar_background_colour if type(exp_bar_background_colour) == tuple else ImageColor.getcolor(exp_bar_background_colour, "RGBA")))
+            if self.current_exp != 0:
+                draw.rounded_rectangle((0, 0, bar_exp, exp_bar_height), exp_bar_curve_custom, fill=self.bar_color)
+
+            background.paste(im, exp_bar_position, im.convert("RGBA"))
+
 
         image = BytesIO()
         if resize != 100:
