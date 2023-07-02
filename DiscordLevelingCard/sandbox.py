@@ -210,22 +210,40 @@ class Sandbox:
         return image
 
 
-    async def custom_canvas(self, has_background: bool = True, background_colour: str = "black",
-                            canvas_size: tuple = (1000, 333), resize: int = 100,
-                            overlay: Union[None, List] = [[(1000-50, 333-50), (25, 25), "black", 200]],
-                            avatar_frame: str = "curvedborder", avatar_size: int = 260,
-                            avatar_position: tuple = (53, 36), text_font: str = "levelfont.otf",
-                            username_position: tuple = (330, 130), username_font_size: int = 50,
-                            level_position: tuple = (500, 40), level_font_size: int = 50,
-                            exp_position: tuple = (775, 130), exp_font_size: int = 50,
-                            bar_exp: tuple = (325, 233, 825, 265), bar_colour: str = "blue",
-                            bar_exp_width: int = 1, current_level_pos: tuple = (330, 240),
-                            current_level_font_size: int = 50, next_level_pos: tuple = (780, 240),
-                            next_level_font_size: int = 50, resize_ratio: int = 100,
-                            custom_objects: Union[None, List] = None, return_avatar: bool = False):
+    async def custom_canvas(self, 
+                        has_background: bool = True, 
+                        background_colour: str = "black",
+                        canvas_size: tuple = (1000, 333), 
+                        resize: int = 100,
+                        overlay: Union[None, List] = [[(1000-50, 333-50), (25, 25), "black", 200]],
+                        avatar_frame: str = "curvedborder", 
+                        avatar_size: int = 260,
+                        avatar_position: tuple = (53, 36), 
+                        text_font: str = "levelfont.otf",
+                        username_position: tuple = (330, 130), 
+                        username_font_size: int = 50,
+                        level_position: tuple = (500, 40), 
+                        level_font_size: int = 50,
+                        exp_position: tuple = (775, 130), 
+                        exp_font_size: int = 50,
+                        bar_exp: tuple = (325, 233, 825, 265), 
+                        bar_colour: str = "blue",
+                        bar_exp_width: int = 1, 
+                        current_level_pos: tuple = (330, 240),
+                        current_level_font_size: int = 50, 
+                        next_level_pos: tuple = (780, 240),
+                        next_level_font_size: int = 50, 
+                        resize_ratio: int = 100,
+                        custom_objects: Union[None, List] = None, 
+                        return_avatar: bool = False,
+                        extra_text: Union[None, List] = None,
+                        exp_bar_width: int = 619,
+                        exp_bar_height: int = 50,
+                        exp_bar_background_colour: str = "white",
+                        exp_bar_position: tuple = (330, 235),
+                        exp_bar_curve: int = 30
+                        )-> Union[None, bytes]:
 
-
-        )-> Union[None, bytes]:
         """
         Sandbox for third type of card which returns "BytesIO"
 
